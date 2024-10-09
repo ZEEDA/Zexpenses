@@ -10,7 +10,7 @@ const SkeletonWrapper = ({
   children: React.ReactNode;
   isLoading: boolean;
   fullWidth?: boolean;
-}) => {
+}) => {  
   if (!isLoading) return children;
   return (
     <Skeleton className={cn(fullWidth && "w-full")}>
