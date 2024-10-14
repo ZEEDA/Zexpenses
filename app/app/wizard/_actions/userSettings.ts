@@ -1,20 +1,31 @@
-'use server';   // This file runs on the server
+'use server';
+import prisma from "@/lib/prisma";
+import { UpdateUserCurrencySchema } from "@/schema/userSettings";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
+// This file runs on the server
 
 export async function UpdateUserCurrency( currency: string ) {
-//   const user = await currentUser();
-//   if (!user) {
-//     return Response.error("User not found", { status: 404 });
-//   }
+    const parsedBody = UpdateUserCurrencySchema.safeParse({ currency });
 
-//   const userSettings = await prisma.userSettings.update({
-//     where: {
-//       userId: user.id,
-//     },
-//     data: {
-//       currency,
-//     },
-//   });
+    if (!parsedBody.success) {
+        throw parsedBody.error;
+    }
 
-//   return Response.json(userSettings);
+    const user = await currentUser()
+    if (!user) {
+        redirect("/sign-in");
+    }
 
+    const userSettings = await prisma.userSettings.update({
+        where:{
+            userId: user.id,
+        },
+        data: {
+            currency,
+        }
+    });
+
+    return userSettings;
 }
